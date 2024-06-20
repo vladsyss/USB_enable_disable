@@ -72,7 +72,7 @@ def _main():
         questions = [
             inquirer.List('choice',
                           message="Выберите пункт меню:",
-                          choices=['Разрешить USB', 'Запретить USB', 'Выход'])
+                          choices=['Разрешить USB', 'Запретить USB', 'О программе', 'Выход'])
         ]
         choice = prompt(questions)['choice']
 
@@ -86,9 +86,22 @@ def _main():
             if confirm_reboot("Установлен запрет на пользование USB")['reboot'] == 'Да':
                 subprocess.Popen('shutdown.exe /r /t 120 /c "Компьютер будет перезагружен через 120 секунд. Сохраните свои документы!"')
 
+        elif choice == 'О программе':
+            print("#-------------------------------------------------------------------------------")
+            print("# Name:        USB_enable_disable.py")
+            print("# Purpose:     USB allow/deny from command line")
+            print("# Author:      sysuev.va")
+            print("# e-mail:      sysuev.va@gidroagregat.ru, vladsyss@ya.ru")
+            print("# Created:     20.06.2024")
+            print("# Copyright:   (c) sysuev.va 2024")
+            print("# Licence:     GPL-3.0 license ")
+            print("#-------------------------------------------------------------------------------")
+            input ('\nНажмите Enter для продолжения...')
+
         elif choice == 'Выход':
             print("Выход из программы.")
             break
+
 
 if is_admin():
     _main()
