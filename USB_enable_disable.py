@@ -1,3 +1,13 @@
+#-------------------------------------------------------------------------------
+# Name:        USB_enable_disable.py
+# Purpose:     USB allow/deny from command line
+# Author:      sysuev.va
+# e-mail:      sysuev.va@gidroagregat.ru, vladsyss@ya.ru
+# Created:     20.06.2024
+# Copyright:   (c) sysuev.va 2024
+# Licence:     GPL-3.0 license 
+#-------------------------------------------------------------------------------
+
 from inquirer import prompt
 import inquirer
 import os
@@ -5,14 +15,13 @@ import ctypes, sys
 import winreg
 import subprocess
 
+
 def confirm_reboot(key):
-
-    questions = [
-        inquirer.Confirm("reboot", message=key+"\n\nНеобходимо перезагрузить компьютер. Выполнить перезагрузку сейчас?", default=True),
-    ]
-    answers = inquirer.prompt(questions)
-
-    return answers
+	q = [
+		inquirer.List("reboot", message=key+"\n\nНеобходимо перезагрузить компьютер. Выполнить перезагрузку сейчас?", choices=["Да", "Нет"], default="Да"),
+	]
+	answers = inquirer.prompt(q)
+	return answers
 
 def USB_allow_deny(_key):
 
@@ -65,19 +74,17 @@ def _main():
                           message="Выберите пункт меню:",
                           choices=['Разрешить USB', 'Запретить USB', 'Выход'])
         ]
-    
         choice = prompt(questions)['choice']
 
         if choice == 'Разрешить USB':
             USB_allow_deny(0)
-            if confirm_reboot("Установлено разрешение на пользование USB")['reboot'] == True:
+            if confirm_reboot("Установлено разрешение на пользование USB")['reboot'] == 'Да':
                 subprocess.Popen('shutdown.exe /r /t 120 /c "Компьютер будет перезагружен через 120 секунд. Сохраните свои документы!"')
 
         elif choice == 'Запретить USB':
             USB_allow_deny(1)
-            if confirm_reboot("Установлен запрет на пользование USB")['reboot'] == True:
+            if confirm_reboot("Установлен запрет на пользование USB")['reboot'] == 'Да':
                 subprocess.Popen('shutdown.exe /r /t 120 /c "Компьютер будет перезагружен через 120 секунд. Сохраните свои документы!"')
-
 
         elif choice == 'Выход':
             print("Выход из программы.")
