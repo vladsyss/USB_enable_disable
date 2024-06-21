@@ -24,6 +24,7 @@ config.read("USB_enable_disable.ini")
 _default = config['Default']['_default']
 
 _reboot = config[_default]['_reboot']
+_restart = config[_default]['_restart']
 _yes = config[_default]['_yes']
 _no = config[_default]['_no']
 
@@ -41,6 +42,17 @@ _press_enter = config[_default]['_press_enter']
 _exit_prog = config[_default]['_exit_prog']
 _run_as_admin = config[_default]['_run_as_admin']
 
+
+filename = 'USB_enable_disable.ini'
+lines = []
+with open(filename) as file:
+    while line := file.readline():
+        if '[' in line.strip():
+            if 'Default' not in line.strip():
+                line = line.strip()
+                line = line.strip('[')
+                line = line.strip(']')
+                lines.append(line)
 
 def confirm_reboot(key):
 	q = [
@@ -114,9 +126,17 @@ def _main():
 
         elif choice == _language:
             questions = [
-                inquirer.List("language", message="Language", choices=["Russian", "English", "Standard"], carousel=True),
+                inquirer.List("language", message="Language", choices = lines, carousel = True),
             ]
             answers = inquirer.prompt(questions)
+            #print (answers)
+            #print (answers['language'])
+            config.set('Default', '_default', answers['language'])
+            with open('USB_enable_disable.ini', 'w') as config_file:
+                config.write(config_file)
+
+            input('\n ' + '\n ' + _restart + '\n ' + '\n ' + _press_enter)
+
 
         elif choice == _about:
             print("#-------------------------------------------------------------------------------")
