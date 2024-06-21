@@ -14,11 +14,36 @@ import os
 import ctypes, sys
 import winreg
 import subprocess
+import configparser
+
+# Считываем учетные данные
+config = configparser.ConfigParser()
+config.read("USB_enable_disable.ini")
+
+# Присваиваем значения внутренним переменным
+_default = config['Default']['_default']
+
+_reboot = config[_default]['_reboot']
+_yes = config[_default]['_yes']
+_no = config[_default]['_no']
+
+_menu = config[_default]['_menu']
+_allow_usb = config[_default]['_allow_usb']
+_deny_usb = config[_default]['_deny_usb']
+_about = config[_default]['_about']
+_exit = config[_default]['_exit']
+_set_allow_usb = config[_default]['_set_allow_usb']
+_set_deny_usb = config[_default]['_set_deny_usb']
+_reboot_pc = config[_default]['_reboot_pc']
+
+_press_enter = config[_default]['_press_enter']
+_exit_prog = config[_default]['_exit_prog']
+_run_as_admin = config[_default]['_run_as_admin']
 
 
 def confirm_reboot(key):
 	q = [
-		inquirer.List("reboot", message=key+"\n\nНеобходимо перезагрузить компьютер. Выполнить перезагрузку сейчас?", choices=["Да", "Нет"], default="Да"),
+		inquirer.List("reboot", message=key+"\n\n" + _reboot, choices=[_yes, _no], default = _yes),
 	]
 	answers = inquirer.prompt(q)
 	return answers
@@ -71,22 +96,22 @@ def _main():
     while True:
         questions = [
             inquirer.List('choice',
-                          message="Выберите пункт меню:",
-                          choices=['Разрешить USB', 'Запретить USB', 'О программе', 'Выход'])
+                          message=_menu,
+                          choices=[_allow_usb, _deny_usb, _about, _exit])
         ]
         choice = prompt(questions)['choice']
 
-        if choice == 'Разрешить USB':
+        if choice == _allow_usb:
             USB_allow_deny(0)
-            if confirm_reboot("Установлено разрешение на пользование USB")['reboot'] == 'Да':
-                subprocess.Popen('shutdown.exe /r /t 120 /c "Компьютер будет перезагружен через 120 секунд. Сохраните свои документы!"')
+            if confirm_reboot(_set_allow_usb)['reboot'] == _yes:
+                subprocess.Popen('shutdown.exe /r /t 120 /c ' + _reboot_pc)
 
-        elif choice == 'Запретить USB':
+        elif choice == _deny_usb:
             USB_allow_deny(1)
-            if confirm_reboot("Установлен запрет на пользование USB")['reboot'] == 'Да':
-                subprocess.Popen('shutdown.exe /r /t 120 /c "Компьютер будет перезагружен через 120 секунд. Сохраните свои документы!"')
+            if confirm_reboot(_set_deny_usb)['reboot'] == _yes:
+                subprocess.Popen('shutdown.exe /r /t 120 /c ' + _reboot_pc)
 
-        elif choice == 'О программе':
+        elif choice == _about:
             print("#-------------------------------------------------------------------------------")
             print("# Name:        USB_enable_disable.py")
             print("# Purpose:     USB allow/deny from command line")
@@ -96,10 +121,10 @@ def _main():
             print("# Copyright:   (c) sysuev.va 2024")
             print("# Licence:     GPL-3.0 license ")
             print("#-------------------------------------------------------------------------------")
-            input ('\nНажмите Enter для продолжения...')
+            input ('\n' + _press_enter)
 
-        elif choice == 'Выход':
-            print("Выход из программы.")
+        elif choice == _exit:
+            print(_exit_prog)
             break
 
 
@@ -107,5 +132,5 @@ if is_admin():
     _main()
 else:
     _clear()
-    print ('\nЗапустите программу от имени администратора')
-    input('\nНажмите Enter для продолжения...')
+    print ('\n ' + _run_as_admin)
+    input('\n ' + _press_enter)
