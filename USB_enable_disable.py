@@ -131,11 +131,14 @@ def _main():
             answers = inquirer.prompt(questions)
             #print (answers)
             #print (answers['language'])
-            config.set('Default', '_default', answers['language'])
-            with open('USB_enable_disable.ini', 'w') as config_file:
-                config.write(config_file)
+            if answers['language'] == '<-----':
+                pass
+            else:
+                config.set('Default', '_default', answers['language'])
+                with open('USB_enable_disable.ini', 'w') as config_file:
+                    config.write(config_file)
 
-            input('\n ' + '\n ' + _restart + '\n ' + '\n ' + _press_enter)
+                input('\n ' + '\n ' + _restart + '\n ' + '\n ' + _press_enter)
 
 
         elif choice == _about:
