@@ -30,6 +30,7 @@ _no = config[_default]['_no']
 _menu = config[_default]['_menu']
 _allow_usb = config[_default]['_allow_usb']
 _deny_usb = config[_default]['_deny_usb']
+_language = config[_default]['_language']
 _about = config[_default]['_about']
 _exit = config[_default]['_exit']
 _set_allow_usb = config[_default]['_set_allow_usb']
@@ -97,7 +98,7 @@ def _main():
         questions = [
             inquirer.List('choice',
                           message=_menu,
-                          choices=[_allow_usb, _deny_usb, _about, _exit])
+                          choices=[_allow_usb, _deny_usb, _language, _about, _exit])
         ]
         choice = prompt(questions)['choice']
 
@@ -110,6 +111,12 @@ def _main():
             USB_allow_deny(1)
             if confirm_reboot(_set_deny_usb)['reboot'] == _yes:
                 subprocess.Popen('shutdown.exe /r /t 120 /c ' + _reboot_pc)
+
+        elif choice == _language:
+            questions = [
+                inquirer.List("language", message="Language", choices=["Russian", "English", "Standard"], carousel=True),
+            ]
+            answers = inquirer.prompt(questions)
 
         elif choice == _about:
             print("#-------------------------------------------------------------------------------")
